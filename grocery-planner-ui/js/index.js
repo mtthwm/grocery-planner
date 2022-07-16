@@ -1,41 +1,16 @@
-// const LoginContainer = function (container)
-// {
-//     Component.call(this, container);
-
-//     // this.render = () => {
-//     //     return (`
-//     //         <h1>Grocery Planner</h1>
-//     //         <a href="" id="kroger-login-button">Log in with Kroger to continue!</a>
-//     //     `)
-//     // };
-// }
-
-// LoginContainer.prototype = new Component();
-// LoginContainer.prototype.constructor = Component;
-
-const LoginContainer = {
-    __proto__: Component,
-    render: () => {
-        return (`
-            <h1>Grocery Planner</h1>
-            <a href="" id="kroger-login-button">Log in with Kroger to continue!</a>
-        `)
-    }
-}
-
 window.onload = async () => {
     const krogerLoginButton = document.getElementById('kroger-login-button');
-    const loginContainer = new LoginContainer(document.getElementById('login-container'));
-
-    console.log(loginContainer);
-    console.log(loginContainer.setState({'test':'test'}));
 
     const currentSearchParams = new URLSearchParams(window.location.search);
     const code = currentSearchParams.get('code');
 
     if (code)
     {   
-        loginContainer.setState({code: code});
+        const accessToken = await getKrogerAccess(code);
+        window.localStorage.setItem('kroger_access_token', accessToken);
+        window.location.href = '../html/list.html';
+        krogerLoginButton.innerHTML = '<div class="loader"></div>';
+        krogerLoginButton.classList.add('no-pointer-events');
     } 
     else
     {
@@ -43,9 +18,18 @@ window.onload = async () => {
     }
 };
 
+const getKrogerAccess = async (code) => {
+    const krogerAccessUrl = `${config.KROGER_ACCESS_URL}?code=${code}`;
+
+    const response = await fetch(krogerAccessUrl, {
+        method: 'GET',
+    });
+    const responseJson = await response.json();
+    return responseJson.access_token;
+};
+
 const fetchKrogerUrl = async () => {
-    const krogerAuthUrl = "http://localhost:7071/api/kroger-auth-url";
-    // const krogerAuthUrl = "https://mtthwmrls-grocery-planner.azurewebsites.net/api/kroger-auth-url?code=axdxrZ59nhbJWV8TMVzbCyIfZ_ncN6wPPRf7rPOxd1MkAzFuvcWMkg%3D%3D"
+    const krogerAuthUrl = config.KROGER_AUTHORIZATION_URL;
     
     const response = await fetch(krogerAuthUrl, {
         method: 'GET'
