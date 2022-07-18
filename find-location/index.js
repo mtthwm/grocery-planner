@@ -1,13 +1,31 @@
+const fetch = require('node-fetch');
+
 module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+    const zipCode = req.query.zipCode;
+    const accessToken = req.body.accessToken;
 
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
-
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
-    };
+    const response = await fetch(`https://${process.env.KROGER_API_DOMAIN}/v1/locations?filter.zipCode.near=${zipCode}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    const responseJson = await response.json();
+    
+    if (responseJson.error && responseJson.error == 'API-401: Invalid Access Token')
+    {
+        context.res = {
+            status: 401,
+            body: {
+                error: 'Token expired or Invalid'
+            }
+        }
+    } 
+    else 
+    {
+        context.res = {
+            status: 200, /* Defaults to 200 */
+            body: responseJson.data,
+        };
+    }
 }
