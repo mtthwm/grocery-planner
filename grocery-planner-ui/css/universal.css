@@ -122,6 +122,10 @@ h3 {
     cursor: pointer;
 }
 
+.search-dropdown-item > * {
+    pointer-events: none;
+}
+
 .search-dropdown-container {
     height: 250px;
     overflow-y: auto;

@@ -77,7 +77,7 @@ const setUpSearchDropdown = async (container, obtainListCallback, renderCallback
             const searchDropdownItems = resultContainer.querySelectorAll('.search-dropdown-item');
             
             searchDropdownItems.forEach((element) => {
-                element.addEventListener('click', clickCallback);
+                element.addEventListener('click', clickCallback, {useCapture: true});
             });
         }
     });
