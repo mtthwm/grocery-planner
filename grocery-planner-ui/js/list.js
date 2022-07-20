@@ -38,9 +38,16 @@ const renderLocation = (location) => {
 };
 
 const renderProducts = (product) => {
+    const thumbnailUrl = product.images[0].sizes.find(image => image.size === 'thumbnail').url;
     return (`
-    <div class="search-dropdown-item" data-product-description="${product.description}">
-        <p>${product.description}</p>
+    <div class="search-dropdown-item" 
+    data-product-description="${product.description}" 
+    data-product-thumbnail="${thumbnailUrl}"
+    data-product-id=${product.productId}>
+        <div class="row align-center">
+            <p>${product.description} - ${product.items[0].price.regular}</p>
+            <img class="ml-auto" src=${thumbnailUrl}/>
+        </div>
     </div>`);
 }
 
