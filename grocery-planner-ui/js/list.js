@@ -3,14 +3,31 @@ const GroceryList = function (container, initialList=[]) {
     this._container = container;
     this._list = initialList;
 
-    this._renderProduct = (product) => {
-        return(`<li>${product.description}</li>`)
+    this._renderProduct = (product, index) => {
+        return(`
+            <li class="list-li">
+                <div class="row">
+                    <p>${product.description}</p>
+                    <img src="${product.thumbnail}"/>
+                    <button class="list-remove btn" data-index="${index}">&#10006;</button>
+                </div>
+            </li>
+        `)
+    };
+
+    this._removeIndex = (index) => {
+        this._list.splice(index, 1);
+        this.render();
+    }
+
+    this._applyEventListeners = () => {
+        this._container.querySelectorAll('.list-remove').forEach(element => element.addEventListener('click', event => {
+            this._removeIndex(event.target.getAttribute('data-index'));
+        }));
     };
 
     this.add = (item) => {
-        console.log(item);
         this._list.push(item);
-        console.log(this._renderProduct(item));
         this.render();
     };
 
@@ -18,16 +35,15 @@ const GroceryList = function (container, initialList=[]) {
         const index = this._list.findIndex(element => {
             return JSON.stringify(element) === JSON.stringify(item);
         });
-        this._list.splice(index, 1);
-        this.render();
+        this._removeIndex(index);
     };
 
     this.render = () => {
-        const content = this._list.map(item => {
-            return this._renderProduct(item)
+        const content = this._list.map((item, index) => {
+            return this._renderProduct(item, index)
         }).join('');
-        console.log(content, this._list);
         this._container.innerHTML = content;  
+        this._applyEventListeners();
     };
 };
 
@@ -43,7 +59,7 @@ const renderProducts = (product) => {
     <div class="search-dropdown-item" 
     data-product-description="${product.description}" 
     data-product-thumbnail="${thumbnailUrl}"
-    data-product-id=${product.productId}>
+    data-product-id="${product.productId}">
         <div class="row align-center">
             <p>${product.description} - ${product.items[0].price.regular}</p>
             <img class="ml-auto" src=${thumbnailUrl}/>
@@ -56,7 +72,8 @@ window.onload = () => {
 
     const productClickHandler = (event) => {
         const origin = event.target;
-        const data = {description: origin.getAttribute('data-product-description')};
+        const dataObject = elementToDataObject(origin);
+        const data = dataObject.product;
         groceryList.add(data);
     }
 
@@ -133,3 +150,42 @@ const lookupProducts = async (term) => {
     const responseJson = await response.json();
     return responseJson;
 }
+
+/*
+Creates an object by extracting the data properties from the given DOM element
+*/
+const elementToDataObject = (element) => {
+    const result = {
+
+    };
+
+    for (let item of element.attributes)
+    {
+        let components = item.name.split('-');
+        if (components[0] === 'data')
+        {
+            let currentObj = result;
+            for (let i = 1; i < components.length; i++)
+            {
+                const key = components[i];
+                const currentValue = currentObj[key];
+
+                if (i === components.length-1)
+                {
+                    currentObj[key] = item.value;
+                }
+                else
+                {
+                    if (!currentValue)
+                    {
+                        currentObj[key] = {}
+                    }
+
+                    currentObj = currentObj[key];
+                }
+            }
+        }
+    }
+
+    return result;
+};
