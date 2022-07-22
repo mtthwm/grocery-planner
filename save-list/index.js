@@ -6,7 +6,7 @@ const dbContext = require('./dbContext');
 module.exports = async function (context, req) {
     const list = req.body.list;
     const accessToken = req.body.accessToken;
-    console.log(accessToken);
+    console.log(req.body);
 
     const userId = await validateUser(accessToken);
     if (!userId)
@@ -37,9 +37,14 @@ module.exports = async function (context, req) {
 
     await dbContext.createDB(client, config);
 
+    const created = saveList(container, list);
+    console.log(created);
+
     context.res = {
         status: 200,
-        body: saveList(container, list),
+        body: {
+            list: list
+        },
     }
 };
 
@@ -57,6 +62,7 @@ const validateUser = async (accessToken) => {
         }
     });
     const responseJson = await response.json();
+
     console.log(responseJson);
 
     if (!responseJson || responseJson.code == 'AUTH-1007' || (responseJson && responseJson.errors))
