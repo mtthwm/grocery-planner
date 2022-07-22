@@ -1,5 +1,5 @@
 {
-  "name": "search-products",
+  "name": "save-list",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/cosmos": "^3.16.3",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {},
