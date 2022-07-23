@@ -6,7 +6,6 @@ const dbContext = require('./dbContext');
 module.exports = async function (context, req) {
     const list = req.body.list;
     const accessToken = req.body.accessToken;
-    console.log(req.body);
 
     const userId = await validateUser(accessToken);
     if (!userId)
@@ -38,19 +37,43 @@ module.exports = async function (context, req) {
     await dbContext.createDB(client, config);
 
     const created = saveList(container, list);
-    console.log(created);
 
-    context.res = {
-        status: 200,
-        body: {
-            list: list
-        },
+    if (created) {
+        context.res = {
+            status: 200,
+            body: {
+                list: list
+            },
+        }
+    } else {
+        context.res = {
+            status: 500,
+            body: {
+                errors: [
+                    "An error occurred"
+                ]
+            }
+        }
     }
 };
 
 const saveList = async (container, list) => {
-    const {resources: createdItem } = await container.items.create(list);
-    return resources;
+    const querySpec = {
+        query: `SELECT * from ${container.id} l WHERE l.user="${list.user}"`,
+    }
+
+    const {resources: items} = await container.items.query(querySpec).fetchAll();
+
+    if (items.length > 0) {
+        const existing = items[0];
+        existing.location = list.location;
+        existing.items = list.items;
+        result = await container.item(existing.id).replace(existing);
+    } else {
+        result = await container.items.create(list);
+    }
+    
+    return result.resource;
 };
 
 const validateUser = async (accessToken) => {
