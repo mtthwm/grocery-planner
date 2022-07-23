@@ -4,7 +4,7 @@ const setupContainer = async (client, configObject) => {
     const database = client.database(databaseId);
     const container = database.container(containerId);
 
-    await createDB(client, config);
+    await createDB(client, configObject);
 
     return container;
 };
@@ -28,4 +28,4 @@ const createDB = async (client, configObject) => {
     console.log(`Created container:\n${container.id}\n`);
 };
 
-module.exports = {createDB};
+module.exports = {createDB, setupContainer};

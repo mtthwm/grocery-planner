@@ -29,7 +29,7 @@ module.exports = async function (context, req) {
     const {endpoint, key} = config;
 
     const cosmosClient = new CosmosClient({endpoint, key});
-    const container = dbContext.setupContainer(cosmosClient, config);
+    const container = await dbContext.setupContainer(cosmosClient, config);
 
     const created = saveList(container, list);
 
