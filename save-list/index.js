@@ -86,8 +86,6 @@ const validateUser = async (accessToken) => {
     });
     const responseJson = await response.json();
 
-    console.log(responseJson);
-
     if (!responseJson || responseJson.code == 'AUTH-1007' || (responseJson && responseJson.errors))
     {
         return null;
