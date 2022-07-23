@@ -1,7 +1,7 @@
 const CosmosClient = require("@azure/cosmos").CosmosClient;
 const fetch = require('node-fetch');
-const config = require('./config');
-const dbContext = require('./dbContext');
+const config = require('../shared/config');
+const dbContext = require('../shared/dbContext');
 
 module.exports = async function (context, req) {
     const list = req.body.list;
@@ -26,15 +26,10 @@ module.exports = async function (context, req) {
         return; 
     }
 
-    const {endpoint, key, databaseId, containerId} = config;
+    const {endpoint, key} = config;
 
-    // Set up database
-    const client = new CosmosClient({endpoint, key});
-
-    const database = client.database(databaseId);
-    const container = database.container(containerId);
-
-    await dbContext.createDB(client, config);
+    const cosmosClient = new CosmosClient({endpoint, key});
+    const container = dbContext.setupContainer(cosmosClient, config);
 
     const created = saveList(container, list);
 

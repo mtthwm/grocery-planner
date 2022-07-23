@@ -1,3 +1,15 @@
+const setupContainer = async (client, configObject) => {
+    const {endpoint, key, databaseId, containerId} = configObject;
+
+    const database = client.database(databaseId);
+    const container = database.container(containerId);
+
+    await createDB(client, config);
+
+    return container;
+};
+
+
 const createDB = async (client, configObject) => {
     // Create the database if it does not exist
     const {database} = await client.databases.createIfNotExists({
