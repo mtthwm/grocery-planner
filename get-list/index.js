@@ -5,7 +5,6 @@ const validation = require('../shared/validation');
 
 module.exports = async function (context, req) {
     const accessToken = req.body.accessToken;
-    console.log(req.body, 'ACCESS TOKEN');
 
     const userId = await validation.validateUser(accessToken);
 
