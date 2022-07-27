@@ -1,22 +1,20 @@
 const fetch = require('node-fetch');
 
 const validateUser = async (accessToken) => {
-    const response = await fetch(`https://${process.env.KROGER_API_DOMAIN}/v1/identity/profile`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-        }
-    });
-    const responseJson = await response.json();
+    try {
+        const response = await fetch(`https://${process.env.KROGER_API_DOMAIN}/v1/identity/profile`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            }
+        });
+        const responseJson = await response.json();
 
-    if (!responseJson || responseJson.code == 'AUTH-1007' || (responseJson && responseJson.errors))
+        return responseJson.data.id;
+    } catch (err)
     {
         return null;
-    }
-    else 
-    {
-        return responseJson.data.id;
     }
 };
 
