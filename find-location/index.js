@@ -3,8 +3,10 @@ const fetch = require('node-fetch');
 module.exports = async function (context, req) {
     const zipCode = req.query.zipCode;
     const accessToken = req.body.accessToken;
+    const resultCount = 50;
+    const excludedChains = ['SHELL COMPANY', 'JEWELRY']
 
-    const response = await fetch(`https://${process.env.KROGER_API_DOMAIN}/v1/locations?filter.zipCode.near=${zipCode}`, {
+    const response = await fetch(`https://${process.env.KROGER_API_DOMAIN}/v1/locations?filter.zipCode.near=${zipCode}&filter.limit=${resultCount}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -23,9 +25,10 @@ module.exports = async function (context, req) {
     } 
     else 
     {
+        const locations = responseJson.data.filter((item) => !excludedChains.includes(item.chain))
         context.res = {
             status: 200, /* Defaults to 200 */
-            body: responseJson.data,
+            body: locations,
         };
     }
 }
