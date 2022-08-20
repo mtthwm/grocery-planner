@@ -23,7 +23,6 @@ module.exports = async function (context, req) {
             'Authorization': `Bearer ${accessToken}`,
         }
     });
-    console.log(response);
     const responseJson = await response.json();
 
     context.res = {

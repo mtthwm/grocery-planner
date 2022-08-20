@@ -7,7 +7,6 @@ module.exports = async function (context, req) {
     const accessToken = req.body.accessToken;
 
     const userId = await validation.validateUser(accessToken);
-
     if (!userId)
     {
         context.res = {

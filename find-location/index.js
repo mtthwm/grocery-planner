@@ -5,7 +5,7 @@ module.exports = async function (context, req) {
     const zipCode = req.query.zipCode;
     const accessToken = req.body.accessToken;
     const resultCount = 50;
-    const excludedChains = ['SHELL COMPANY', 'JEWELRY']
+    const excludedChains = ['SHELL COMPANY', 'JEWELRY'];
 
     const userId = await validation.validateUser(accessToken);
     if (!userId)
@@ -36,6 +36,7 @@ module.exports = async function (context, req) {
     } 
     else 
     {
+        // Filter out irrelevant data, including fuel stations and jewelry stores
         const locations = responseJson.data.filter((item) => !excludedChains.includes(item.chain))
         context.res = {
             status: 200, /* Defaults to 200 */
